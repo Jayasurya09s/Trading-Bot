@@ -18,6 +18,20 @@ from core.strategies import StrategyEngine
 st.set_page_config(page_title="Trading Terminal", layout="wide", initial_sidebar_state="expanded")
 
 
+class OfflineBinanceClient:
+	def __init__(self, reason: str = "Binance unavailable"):
+		self.init_error = reason
+
+	def get_account_balance(self) -> float:
+		return 0.0
+
+	def get_positions(self):
+		return []
+
+	def get_latest_price(self, symbol: str) -> float:
+		raise RuntimeError(self.init_error)
+
+
 def inject_styles() -> None:
 	st.markdown(
 		"""
@@ -138,11 +152,18 @@ def main() -> None:
 	inject_styles()
 	st.markdown('<div class="terminal-panel"><div class="terminal-title">Binance Futures Terminal</div><div class="ticker"><span>BTCUSDT  ETHUSDT  SOLUSDT  XRPUSDT  ADAUSDT  AVAXUSDT  •  LIVE PNL  RISK  OMS  BACKTEST  •  TESTNET OPERATIONS</span></div></div>', unsafe_allow_html=True)
 
-	client = BinanceClient()
+	init_warning = ""
+	try:
+		client = BinanceClient()
+		init_warning = getattr(client, "init_error", "") or ""
+	except Exception as exc:
+		client = OfflineBinanceClient(str(exc))
+		init_warning = str(exc)
+
 	portfolio = PortfolioTracker(client)
 	strategy_engine = StrategyEngine()
-	if getattr(client, "init_error", None):
-		st.warning(f"Binance connectivity unavailable: {client.init_error}")
+	if init_warning:
+		st.warning(f"Binance connectivity unavailable: {init_warning}")
 
 	with st.sidebar:
 		st.header("Control Desk")
