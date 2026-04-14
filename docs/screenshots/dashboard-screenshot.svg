@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="bg3" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#020405"/>
+      <stop offset="100%" stop-color="#06090a"/>
+    </linearGradient>
+    <linearGradient id="panel3" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#101817"/>
+      <stop offset="100%" stop-color="#070b0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg3)"/>
+  <rect x="48" y="40" width="1504" height="920" rx="22" fill="url(#panel3)" stroke="#1f6f53" stroke-opacity="0.4"/>
+  <rect x="48" y="40" width="1504" height="80" rx="22" fill="#0d1514"/>
+  <text x="90" y="90" fill="#86efac" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="1">BINANCE FUTURES TERMINAL</text>
+  <text x="90" y="130" fill="#facc15" font-family="Consolas, monospace" font-size="16">BTCUSDT  ETHUSDT  SOLUSDT  XRPUSDT  ADAUSDT  LIVE PNL  OMS  RISK  EQUITY</text>
+
+  <rect x="90" y="160" width="330" height="150" rx="16" fill="#08100f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="120" y="205" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">Wallet Balance</text>
+  <text x="120" y="250" fill="#86efac" font-family="Consolas, monospace" font-size="36">0.00 USDT</text>
+  <text x="120" y="285" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">API access currently restricted</text>
+
+  <rect x="440" y="160" width="330" height="150" rx="16" fill="#08100f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="470" y="205" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">Open Positions</text>
+  <text x="470" y="250" fill="#86efac" font-family="Consolas, monospace" font-size="36">0</text>
+  <text x="470" y="285" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">Portfolio tracker ready</text>
+
+  <rect x="790" y="160" width="330" height="150" rx="16" fill="#08100f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="820" y="205" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">Exposure</text>
+  <text x="820" y="250" fill="#86efac" font-family="Consolas, monospace" font-size="36">0.00</text>
+  <text x="820" y="285" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">Risk engine linked</text>
+
+  <rect x="1140" y="160" width="330" height="150" rx="16" fill="#08100f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="1170" y="205" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">Live PnL</text>
+  <text x="1170" y="250" fill="#facc15" font-family="Consolas, monospace" font-size="36">0.00</text>
+  <text x="1170" y="285" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">Waiting for live feed</text>
+
+  <rect x="90" y="340" width="960" height="520" rx="18" fill="#07100f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="120" y="385" fill="#86efac" font-family="Consolas, monospace" font-size="22">Trade History</text>
+  <text x="120" y="430" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">timestamp                 symbol   side   order_type  quantity  price    status</text>
+  <text x="120" y="465" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">2026-04-14T17:16:05Z      BTCUSDT  BUY    MARKET      0.001     -        FILLED</text>
+  <text x="120" y="500" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">2026-04-14T17:16:18Z      BTCUSDT  SELL   LIMIT       0.001     60000    FAILED</text>
+  <text x="120" y="535" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">2026-04-14T17:16:37Z      BTCUSDT  SELL   LIMIT       0.001     80000    PENDING</text>
+
+  <text x="120" y="600" fill="#86efac" font-family="Consolas, monospace" font-size="22">Equity Curve</text>
+  <path d="M120 810 L220 808 L320 806 L420 805 L520 804 L620 802 L720 800 L820 799 L920 798" fill="none" stroke="#86efac" stroke-width="4"/>
+  <text x="120" y="860" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">Dashboard combines trade journal, analytics, and multi-symbol monitoring.</text>
+
+  <rect x="1080" y="340" width="390" height="520" rx="18" fill="#08110f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="1110" y="385" fill="#86efac" font-family="Consolas, monospace" font-size="22">Order History UI</text>
+  <text x="1110" y="430" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">local_id      exchange_id   status</text>
+  <text x="1110" y="465" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">3455384a...   13035156926   FILLED</text>
+  <text x="1110" y="500" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">1ea79743...   13035159063   PENDING</text>
+  <text x="1110" y="535" fill="#d1fae5" font-family="Consolas, monospace" font-size="16">0119b63e...   -             FAILED</text>
+  <text x="1110" y="595" fill="#facc15" font-family="Consolas, monospace" font-size="18">Bloomberg-style terminal layout</text>
+  <text x="1110" y="630" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">Dark panels, dense tables, neon accents</text>
+  <text x="1110" y="665" fill="#7c8a86" font-family="Consolas, monospace" font-size="16">and compact execution analytics</text>
+</svg>

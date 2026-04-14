@@ -1,0 +1,9 @@
+python-binance
+python-dotenv
+rich
+pandas
+numpy
+ta
+pytest
+streamlit
+

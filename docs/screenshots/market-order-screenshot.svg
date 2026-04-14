@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#030506"/>
+      <stop offset="100%" stop-color="#070b0c"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#101917"/>
+      <stop offset="100%" stop-color="#060808"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="60" y="50" width="1480" height="800" rx="22" fill="url(#panel)" stroke="#2dd4bf" stroke-opacity="0.35"/>
+  <rect x="60" y="50" width="1480" height="54" rx="22" fill="#0d1514"/>
+  <text x="100" y="86" fill="#86efac" font-family="Consolas, monospace" font-size="22" letter-spacing="2">CLI ORDER SCREENSHOT - MARKET</text>
+
+  <text x="100" y="160" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">Command</text>
+  <text x="100" y="190" fill="#86efac" font-family="Consolas, monospace" font-size="24">python -m cli.main --symbol BTCUSDT --side BUY --type MARKET --qty 0.001</text>
+
+  <rect x="100" y="240" width="620" height="320" rx="18" fill="#081110" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="130" y="285" fill="#86efac" font-family="Consolas, monospace" font-size="24">Order Summary</text>
+  <text x="130" y="335" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">id               3455384a0e1d4123955bfcbd4dfa07f6</text>
+  <text x="130" y="372" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">exchange_order_id 13035156926</text>
+  <text x="130" y="409" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">symbol           BTCUSDT</text>
+  <text x="130" y="446" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">side             BUY</text>
+  <text x="130" y="483" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">order_type       MARKET</text>
+  <text x="130" y="520" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">status           FILLED</text>
+
+  <rect x="760" y="240" width="680" height="320" rx="18" fill="#0b1211" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="790" y="285" fill="#facc15" font-family="Consolas, monospace" font-size="24">API Response</text>
+  <text x="790" y="335" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">orderId         13035156926</text>
+  <text x="790" y="372" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">symbol          BTCUSDT</text>
+  <text x="790" y="409" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">side            BUY</text>
+  <text x="790" y="446" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">type            MARKET</text>
+  <text x="790" y="483" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">status          NEW</text>
+  <text x="790" y="520" fill="#d1fae5" font-family="Consolas, monospace" font-size="20">executedQty     0.001</text>
+
+  <rect x="100" y="610" width="1340" height="160" rx="18" fill="#07100f" stroke="#1f6f53" stroke-opacity="0.45"/>
+  <text x="130" y="660" fill="#86efac" font-family="Consolas, monospace" font-size="20">Evidence</text>
+  <text x="130" y="700" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">Structured logging active, order attempt persisted to logs/bot.log and data/trades.csv.</text>
+  <text x="130" y="736" fill="#d1fae5" font-family="Consolas, monospace" font-size="18">This screenshot reflects the latest MARKET order run on Binance Futures Testnet.</text>
+</svg>
