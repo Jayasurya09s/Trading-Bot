@@ -1,0 +1,19 @@
+2026-04-14 22:46:05 | INFO | trading_bot.core.order_manager | Order placed | local_id=3455384a0e1d4123955bfcbd4dfa07f6 exchange_order_id=13035156926 symbol=BTCUSDT side=BUY type=MARKET qty=0.001 status=FILLED exchange_status=NEW
+2026-04-14 22:46:18 | ERROR | trading_bot.core.order_manager | Order failed | local_id=0119b63e26404230b105410054786ff6 symbol=BTCUSDT side=SELL type=LIMIT qty=0.001
+Traceback (most recent call last):
+  File "C:\Users\jayan\Desktop\Trading Bot\core\order_manager.py", line 37, in place_order
+    exchange_order = self.client.place_order(
+  File "C:\Users\jayan\Desktop\Trading Bot\utils\retry.py", line 57, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\jayan\Desktop\Trading Bot\api\binance_client.py", line 143, in place_order
+    return client.futures_create_order(**params)
+  File "C:\Users\jayan\Desktop\Trading Bot\venv\lib\site-packages\binance\client.py", line 7951, in futures_create_order
+    return self._request_futures_api("post", "order", True, data=params)
+  File "C:\Users\jayan\Desktop\Trading Bot\venv\lib\site-packages\binance\client.py", line 144, in _request_futures_api
+    return self._request(method, uri, signed, force_params, **kwargs)
+  File "C:\Users\jayan\Desktop\Trading Bot\venv\lib\site-packages\binance\client.py", line 107, in _request
+    return self._handle_response(self.response)
+  File "C:\Users\jayan\Desktop\Trading Bot\venv\lib\site-packages\binance\client.py", line 116, in _handle_response
+    raise BinanceAPIException(response, response.status_code, response.text)
+binance.exceptions.BinanceAPIException: APIError(code=-4024): Limit price can't be lower than 71056.91.
+2026-04-14 22:46:37 | INFO | trading_bot.core.order_manager | Order placed | local_id=1ea79743a91e4a179ca270ea32ad7dcc exchange_order_id=13035159063 symbol=BTCUSDT side=SELL type=LIMIT qty=0.001 status=PENDING exchange_status=NEW

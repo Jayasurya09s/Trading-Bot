@@ -1,0 +1,4 @@
+timestamp,order_id,symbol,side,order_type,quantity,price,status,pnl,strategy,notes
+2026-04-14T17:16:05.399345+00:00,,BTCUSDT,BUY,MARKET,0.001,,FILLED,0.0,ma_rsi,
+2026-04-14T17:16:18.704268+00:00,,BTCUSDT,SELL,LIMIT,0.001,60000.0,FAILED,0.0,ma_rsi,
+2026-04-14T17:16:37.783341+00:00,,BTCUSDT,SELL,LIMIT,0.001,80000.0,PENDING,0.0,ma_rsi,
