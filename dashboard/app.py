@@ -141,6 +141,8 @@ def main() -> None:
 	client = BinanceClient()
 	portfolio = PortfolioTracker(client)
 	strategy_engine = StrategyEngine()
+	if getattr(client, "init_error", None):
+		st.warning(f"Binance connectivity unavailable: {client.init_error}")
 
 	with st.sidebar:
 		st.header("Control Desk")
@@ -160,12 +162,22 @@ def main() -> None:
 	except Exception:
 		wallet_balance = 0.0
 
+	try:
+		open_positions = len(portfolio.active_positions())
+	except Exception:
+		open_positions = 0
+
+	try:
+		exposure = portfolio.active_exposure()
+	except Exception:
+		exposure = 0.0
+
 	with top_left:
 		st.metric("Wallet Balance", f"{wallet_balance:,.2f} USDT")
 	with top_mid:
-		st.metric("Open Positions", len(portfolio.active_positions()))
+		st.metric("Open Positions", open_positions)
 	with top_right:
-		st.metric("Exposure", f"{portfolio.active_exposure():,.2f}")
+		st.metric("Exposure", f"{exposure:,.2f}")
 	with top_four:
 		st.metric("Strategy", strategy_name.upper())
 

@@ -25,12 +25,26 @@ class BinanceClient:
         self.api_key = api_key or os.getenv("API_KEY")
         self.api_secret = api_secret or os.getenv("API_SECRET")
         self.base_url = base_url or os.getenv("BASE_URL", "https://testnet.binancefuture.com")
-        self.client = Client(self.api_key, self.api_secret, testnet=testnet)
-        self.client.FUTURES_URL = self.base_url
+        self.client: Client | None = None
+        self.init_error: str | None = None
+
+        try:
+            # Disable eager ping so hosted dashboards can still boot even when Binance is blocked/unreachable.
+            self.client = Client(self.api_key, self.api_secret, testnet=testnet, ping=False)
+            self.client.FUTURES_URL = self.base_url
+        except Exception as exc:
+            self.init_error = str(exc)
+            self.logger.warning("Binance client initialization failed: %s", exc)
+
+    def _ensure_client(self) -> Client:
+        if self.client is None:
+            raise RuntimeError(f"Binance client unavailable: {self.init_error or 'initialization failed'}")
+        return self.client
 
     def _ensure_auth(self) -> None:
         if not self.api_key or not self.api_secret:
             raise RuntimeError("API_KEY and API_SECRET are required for authenticated futures operations")
+        self._ensure_client()
 
     @retry
     def place_order(
@@ -60,12 +74,12 @@ class BinanceClient:
             params["reduceOnly"] = True
 
         self.logger.info("Submitting order: %s", params)
-        return self.client.futures_create_order(**params)
+        return self._ensure_client().futures_create_order(**params)
 
     @retry
     def get_account_balance(self) -> float:
         self._ensure_auth()
-        balances = self.client.futures_account_balance()
+        balances = self._ensure_client().futures_account_balance()
         for entry in balances:
             if entry.get("asset") == "USDT":
                 return float(entry.get("balance", 0.0))
@@ -74,16 +88,16 @@ class BinanceClient:
     @retry
     def get_positions(self) -> List[Dict[str, Any]]:
         self._ensure_auth()
-        return self.client.futures_position_information()
+        return self._ensure_client().futures_position_information()
 
     @retry
     def get_latest_price(self, symbol: str) -> float:
-        ticker = self.client.futures_symbol_ticker(symbol=symbol.upper())
+        ticker = self._ensure_client().futures_symbol_ticker(symbol=symbol.upper())
         return float(ticker["price"])
 
     @retry
     def get_historical_klines(self, symbol: str, interval: str = "1m", limit: int = 500) -> pd.DataFrame:
-        klines = self.client.futures_klines(symbol=symbol.upper(), interval=interval, limit=limit)
+        klines = self._ensure_client().futures_klines(symbol=symbol.upper(), interval=interval, limit=limit)
         if not klines:
             return pd.DataFrame()
 
