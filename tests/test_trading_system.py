@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 
 from core.order_manager import OrderManager
 from core.portfolio import PortfolioTracker
 from core.risk_engine import RiskEngine
 from core.strategies import StrategyEngine
+from utils.validator import TradingValidationError, validate_order_inputs
 
 
 def test_breakout_strategy_generates_buy_signal():
@@ -64,3 +66,48 @@ def test_order_manager_tracks_filled_and_pending_orders():
     assert market_order["status"] == "FILLED"
     assert limit_order["status"] == "PENDING"
     assert len(manager.get_order_history()) == 2
+
+
+def test_order_manager_marks_failed_on_client_exception():
+    class FailingClient:
+        def place_order(self, symbol, side, order_type, quantity, price=None):
+            raise RuntimeError("boom")
+
+    manager = OrderManager(FailingClient())
+    order = manager.place_order("BTCUSDT", "BUY", "MARKET", 0.01)
+    assert order["status"] == "FAILED"
+    assert "boom" in str(order.get("error", ""))
+
+
+def test_validate_order_inputs_positive_case():
+    symbol, side, order_type, qty, price = validate_order_inputs("btcusdt", "buy", "market", 0.01, None)
+    assert symbol == "BTCUSDT"
+    assert side == "BUY"
+    assert order_type == "MARKET"
+    assert qty == 0.01
+    assert price is None
+
+
+def test_validate_order_inputs_limit_requires_price_negative_case():
+    with pytest.raises(TradingValidationError, match="Limit orders require a price"):
+        validate_order_inputs("BTCUSDT", "SELL", "LIMIT", 0.01, None)
+
+
+def test_validate_order_inputs_rejects_invalid_quantity_negative_case():
+    with pytest.raises(TradingValidationError, match="Quantity must be greater than zero"):
+        validate_order_inputs("BTCUSDT", "SELL", "MARKET", 0.0, None)
+
+
+def test_risk_engine_blocks_trade_after_daily_loss_negative_case():
+    engine = RiskEngine(max_risk_per_trade=0.01, max_daily_loss=0.05, max_position_pct=0.2)
+    engine.start_session(1000)
+    engine.record_pnl(-60.0)
+
+    with pytest.raises(ValueError, match="Daily loss limit exceeded"):
+        engine.validate_trade(balance=1000, quantity=0.01, price=100, stop_loss_price=99)
+
+
+def test_strategy_engine_rejects_unknown_strategy_negative_case():
+    frame = pd.DataFrame([{"open": 1, "high": 1, "low": 1, "close": 1}])
+    with pytest.raises(ValueError, match="Unknown strategy"):
+        StrategyEngine().evaluate(frame, "unknown_strategy")

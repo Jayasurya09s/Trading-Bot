@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -119,6 +120,62 @@ def load_trade_history() -> pd.DataFrame:
 	return frame
 
 
+def load_log_fallback() -> tuple[pd.DataFrame, str]:
+	log_path = Path("logs/bot.log")
+	columns = ["timestamp", "symbol", "side", "order_type", "quantity", "price", "status", "source", "reason"]
+	if not log_path.exists() or log_path.stat().st_size == 0:
+		return pd.DataFrame(columns=columns), ""
+
+	rows = []
+	reason = ""
+	placed_pattern = re.compile(
+		r"^(?P<timestamp>\S+\s+\S+)\s+\|\s+INFO\s+\|\s+.*Order placed\s+\|\s+.*symbol=(?P<symbol>\S+)\s+side=(?P<side>\S+)\s+type=(?P<order_type>\S+)\s+qty=(?P<qty>\S+)\s+status=(?P<status>\S+)"
+	)
+	failed_pattern = re.compile(
+		r"^(?P<timestamp>\S+\s+\S+)\s+\|\s+ERROR\s+\|\s+.*Order failed\s+\|\s+.*symbol=(?P<symbol>\S+)\s+side=(?P<side>\S+)\s+type=(?P<order_type>\S+)\s+qty=(?P<qty>\S+)"
+	)
+
+	for line in log_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+		if "BinanceAPIException:" in line:
+			reason = line.split("BinanceAPIException:", 1)[1].strip()
+
+		placed_match = placed_pattern.search(line)
+		if placed_match:
+			rows.append(
+				{
+					"timestamp": placed_match.group("timestamp"),
+					"symbol": placed_match.group("symbol"),
+					"side": placed_match.group("side"),
+					"order_type": placed_match.group("order_type"),
+					"quantity": placed_match.group("qty"),
+					"price": "",
+					"status": placed_match.group("status"),
+					"source": "log",
+					"reason": "",
+				}
+			)
+			continue
+
+		failed_match = failed_pattern.search(line)
+		if failed_match:
+			rows.append(
+				{
+					"timestamp": failed_match.group("timestamp"),
+					"symbol": failed_match.group("symbol"),
+					"side": failed_match.group("side"),
+					"order_type": failed_match.group("order_type"),
+					"quantity": failed_match.group("qty"),
+					"price": "",
+					"status": "FAILED",
+					"source": "log",
+					"reason": reason,
+				}
+			)
+
+	frame = pd.DataFrame(rows, columns=columns)
+	return frame, reason
+
+
 def build_equity_curve(trades: pd.DataFrame) -> pd.DataFrame:
 	if trades.empty:
 		return pd.DataFrame({"equity": [1000.0]})
@@ -164,6 +221,11 @@ def main() -> None:
 	strategy_engine = StrategyEngine()
 	if init_warning:
 		st.warning(f"Binance connectivity unavailable: {init_warning}")
+		log_frame, log_reason = load_log_fallback()
+		if log_reason:
+			st.info(f"Reason from logs: {log_reason}")
+		elif not log_frame.empty:
+			st.info("Loaded fallback order activity from logs because API is unavailable.")
 
 	with st.sidebar:
 		st.header("Control Desk")
@@ -175,6 +237,13 @@ def main() -> None:
 
 	symbols = [symbol.strip().upper() for symbol in symbol_input.split(",") if symbol.strip()]
 	trades = load_trade_history()
+	if init_warning:
+		log_frame, _ = load_log_fallback()
+		if not log_frame.empty:
+			if trades.empty:
+				trades = log_frame
+			else:
+				trades = pd.concat([trades, log_frame], ignore_index=True)
 	equity_curve = build_equity_curve(trades)
 
 	top_left, top_mid, top_right, top_four = st.columns(4)

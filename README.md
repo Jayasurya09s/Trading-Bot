@@ -1,102 +1,90 @@
-# Advanced Algorithmic Trading System
+# Advanced Algorithmic Trading Platform
 
-Production-style Python trading platform for Binance Futures Testnet (USDT-M) with a modular execution layer, OMS, portfolio tracking, strategy engine, backtesting, live streaming, journaling, and a Bloomberg-inspired Streamlit dashboard.
+A production-style Python trading platform for Binance Futures Testnet (USDT-M), designed with clean architecture principles and built for both execution and analytics workflows.
 
-## Architecture
+## Live Deployment
 
-The project is organized around clean boundaries:
+- Streamlit app: https://jaytradingbot.streamlit.app/
+- Deployed mode intentionally runs with API-safe behavior for reliability on hosted environments.
+- If Binance API calls fail in deployed mode, the dashboard falls back to journal/log data and surfaces the extracted failure reason from `logs/bot.log`.
+
+## Architecture Overview
+
+### Repository Structure
 
 ```text
 trading-bot/
-├── cli/         # Argument-driven command line entrypoint
-├── api/         # Binance REST and WebSocket integration
-├── core/        # Strategy, OMS, risk, portfolio, backtest, live engine
-├── dashboard/   # Streamlit analytics layer
-├── utils/       # Logging, validation, retry helpers
-├── data/        # Trade journal and market snapshots
-├── logs/        # Structured system logs
-├── docs/        # Screenshots and supporting material
-└── tests/       # Unit tests
+├── api/              # Binance REST and WebSocket clients
+├── cli/              # Command-line entrypoint and command orchestration
+├── core/             # OMS, risk, portfolio, strategy, engine, backtest
+├── dashboard/        # Streamlit dashboard
+├── utils/            # Logging, retry, and validation helpers
+├── data/             # Trade journal CSV
+├── logs/             # Runtime logs
+├── docs/screenshots/ # Submission screenshots
+└── tests/            # Unit test coverage (positive + negative cases)
 ```
 
-## Core Capabilities
+### Component Diagram
 
-The system is built as a simplified real-world quant stack with separate execution and analytics paths.
+```mermaid
+flowchart LR
+	CLI[CLI\ncli/main.py] --> ENGINE[Trading Engine\ncore/engine.py]
+	ENGINE --> OMS[Order Manager\ncore/order_manager.py]
+	ENGINE --> RISK[Risk Engine\ncore/risk_engine.py]
+	ENGINE --> STRAT[Strategy Engine\ncore/strategies.py]
+	ENGINE --> JOURNAL[Trade Journal\ncore/journal.py]
+	OMS --> API[Binance Client\napi/binance_client.py]
+	API --> BINANCE[(Binance Futures Testnet)]
+	DASH[Dashboard\ndashboard/app.py] --> JOURNAL
+	DASH --> API
+	BACKTEST[Backtest\ncore/backtest.py] --> API
+```
 
-### Execution Layer
+### Order Execution Sequence
 
-- MARKET and LIMIT order placement for BUY and SELL directions
-- CLI-based workflow with argument parsing
-- Retry handling for transient API failures
-- Structured logging and exception capture
-- In-memory OMS lifecycle tracking with PENDING, FILLED, and FAILED states
+```mermaid
+sequenceDiagram
+	participant U as User
+	participant C as CLI
+	participant E as Engine
+	participant R as Risk Engine
+	participant O as OMS
+	participant B as Binance
+	participant J as Journal
 
-### Portfolio and Risk
+	U->>C: MARKET/LIMIT command
+	C->>E: execute_order(...)
+	E->>R: validate_trade(...)
+	E->>O: place_order(...)
+	O->>B: futures_create_order
+	B-->>O: order response
+	O-->>E: FILLED/PENDING/FAILED
+	E->>J: log_trade(order)
+	E-->>C: summary + api response
+```
 
-- Futures balance retrieval
-- Open position tracking
-- Active exposure calculation
-- Live PnL calculation from current market price and open positions
-- Risk checks based on risk per trade
-- Maximum daily loss enforcement
-- Position sizing logic derived from account equity and stop-loss distance
+## Features
 
-### Strategy Engine
+### Core Assignment Requirements
 
-- MA + RSI strategy
-- Breakout strategy
-- Dynamic strategy selection from CLI and dashboard
-- Strategy consensus support for future expansion
+- Place MARKET orders
+- Place LIMIT orders
+- BUY and SELL support
+- CLI argument input for symbol, side, type, qty, price
+- Order summary and API response output
+- Logging and exception handling
 
-### Backtesting
+### Advanced Platform Features
 
-- Historical Binance Futures candles
-- Equity curve generation
-- Sharpe ratio
-- Maximum drawdown
-- Total trades
-
-### Real-Time Trading
-
-- Binance WebSocket price streaming
-- Optional auto-trading based on strategy signals
-- Rolling live frame construction for signal generation
-
-### Dashboard
-
-- Streamlit dashboard with a Bloomberg-terminal style visual language
-- Trade history and order history views
-- Live PnL and exposure summary
-- Equity curve visualization
-- Multi-symbol market monitoring
-
-## Assignment Compliance Checklist
-
-### Must-Do Requirements
-
-- MARKET orders: supported via CLI
-- LIMIT orders: supported via CLI
-- BUY and SELL: supported
-- CLI inputs: symbol, side, type, quantity, price
-- Output: order summary and exchange API response fields when available
-- Clean structure: CLI, API, core, utils, dashboard separation
-- Logging: structured logs in `logs/bot.log`
-- Error handling: exception-safe execution with clear failure messages
-
-### Deliverables
-
-- Source code: included in this repository
-- README: this file
-- requirements.txt: dependency list for runtime
-- Logs of one MARKET and one LIMIT order attempt: recorded in `logs/bot.log`
-
-### Execution Evidence
-
-- MARKET attempt log entry: `Order failed ... type=MARKET ...`
-- LIMIT attempt log entry: `Order failed ... type=LIMIT ...`
-- Matching journal entries for both attempts: `data/trades.csv`
-
-Note: this workspace currently returns Binance API error `-2015` (invalid API key, IP, or permissions), so orders are logged as failed attempts until valid testnet credentials are configured.
+- Order Management System with in-memory lifecycle tracking
+- Portfolio tracking (balance, positions, exposure, live PnL)
+- Multi-strategy engine (MA+RSI, breakout)
+- Risk controls (risk-per-trade, daily loss gating, position sizing)
+- Backtesting with equity curve, Sharpe ratio, drawdown, total trades
+- WebSocket price streaming and optional auto-trading
+- Streamlit dashboard for execution analytics and journal review
+- Automatic fallback mode in dashboard: reads `data/trades.csv` and `logs/bot.log` when API is unavailable, with on-screen reason reporting
 
 ## Setup
 
@@ -106,88 +94,84 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project root:
+Create .env from .env.example:
 
 ```env
-API_KEY=your_testnet_key
+API_KEY=your_testnet_api_key
 API_SECRET=your_testnet_secret
 BASE_URL=https://testnet.binancefuture.com
 ```
 
 ## Usage
 
-### Place a Market Order
-
 ```bash
+# MARKET
 python cli/main.py --symbol BTCUSDT --side BUY --type MARKET --qty 0.001
-```
 
-### Place a Limit Order
+# LIMIT
+python cli/main.py --symbol BTCUSDT --side SELL --type LIMIT --qty 0.001 --price 80000
 
-```bash
-python cli/main.py --symbol BTCUSDT --side SELL --type LIMIT --qty 0.001 --price 60000
-```
-
-### Run a Backtest
-
-```bash
+# BACKTEST
 python cli/main.py --symbol BTCUSDT --type BACKTEST --strategy ma_rsi --interval 1m --limit 500
-```
 
-### Start Live Trading
-
-```bash
+# LIVE stream
 python cli/main.py --symbol BTCUSDT --type LIVE --strategy breakout --qty 0.001
-```
 
-### Start Auto-Trading
-
-```bash
-python cli/main.py --symbol BTCUSDT --type AUTO --strategy ma_rsi --qty 0.001 --auto-trade
-```
-
-### Open the Dashboard
-
-```bash
+# Dashboard
 streamlit run dashboard/app.py
 ```
 
 ## Screenshots
 
-These repository assets show the intended terminal and dashboard presentation:
+### Provided Deployed App Screenshots
 
-- [MARKET order screenshot](docs/screenshots/market-order-screenshot.svg)
-- [LIMIT order screenshot](docs/screenshots/limit-order-screenshot.svg)
-- [Dashboard screenshot](docs/screenshots/dashboard-screenshot.svg)
+![Deployed Dashboard Screenshot 1](docs/screenshots/deployed-dashboard-1.png)
+![Deployed Dashboard Screenshot 2](docs/screenshots/deployed-dashboard-2.png)
 
-## Sample Data
+### Local Submission Artifacts
 
+![Market Order Screenshot](docs/screenshots/market-order-screenshot.svg)
+![Limit Order Screenshot](docs/screenshots/limit-order-screenshot.svg)
+![Dashboard Screenshot](docs/screenshots/dashboard-screenshot.svg)
+
+## Logs and Data Evidence
+
+- Runtime logs: [logs/bot.log](logs/bot.log)
 - Trade journal: [data/trades.csv](data/trades.csv)
-- Log sample: [logs/bot.log](logs/bot.log)
 
-## Design Decisions
+## Testing
 
-- The CLI only orchestrates workflows; it does not own trading logic.
-- OMS, portfolio tracking, risk checks, and strategies are reusable core services.
-- Backtesting uses the same strategy layer as live trading to keep signal behavior consistent.
-- Live PnL is computed against open futures positions instead of using static placeholders.
-- The dashboard emphasizes dense market information and dark-terminal styling to match a Bloomberg-style workflow.
+Run tests:
 
-## Assumptions
+```bash
+python -m pytest -q
+```
 
-- Binance Futures Testnet credentials are available in `.env`.
-- Historical candle data is available from Binance public futures endpoints.
-- Live auto-trading is enabled only when the user explicitly requests it.
-- The dashboard reads from local journal files and live market data, not from a separate database.
+### Current Coverage Includes
 
-## Validation
+- Positive cases:
+	- breakout strategy BUY signal
+	- risk engine valid position sizing and validation
+	- portfolio live PnL for long and short positions
+	- order manager tracks FILLED and PENDING states
+	- validator accepts normalized valid input
+- Negative cases:
+	- order manager handles API exception and marks FAILED
+	- validator rejects zero quantity
+	- validator rejects LIMIT without price
+	- risk engine blocks trading after daily loss breach
+	- strategy engine rejects unknown strategy
 
-The repository includes focused unit tests for strategy evaluation, position sizing, live PnL math, and OMS state handling.
+## Design Decisions and Assumptions
 
-## Future Extensions
+- Domain logic is centralized in core modules to keep CLI and dashboard thin.
+- Retry and structured logging are first-class reliability concerns.
+- Journal writes all attempts for auditability (including failures).
+- Deployed dashboard mode favors stability and observability when exchange APIs are restricted by cloud environment/network policy.
 
-- Persistent order storage
-- Database-backed portfolio snapshots
-- Multi-account support
-- More strategies and signal ensembles
-- Alerting and notifications
+## Next Improvements
+
+- Persistent OMS and portfolio snapshots in a database
+- Async execution and worker queue for multi-symbol live trading
+- Richer dashboard analytics and strategy comparison views
+- CI pipeline with linting and coverage gates
