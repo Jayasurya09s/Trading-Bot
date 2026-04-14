@@ -17,3 +17,11 @@ Traceback (most recent call last):
     raise BinanceAPIException(response, response.status_code, response.text)
 binance.exceptions.BinanceAPIException: APIError(code=-4024): Limit price can't be lower than 71056.91.
 2026-04-14 22:46:37 | INFO | trading_bot.core.order_manager | Order placed | local_id=1ea79743a91e4a179ca270ea32ad7dcc exchange_order_id=13035159063 symbol=BTCUSDT side=SELL type=LIMIT qty=0.001 status=PENDING exchange_status=NEW
+2026-04-14 23:18:34 | INFO | trading_bot.api.binance_client | Submitting order: {'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001}
+2026-04-14 23:18:34 | INFO | trading_bot.core.order_manager | Order placed | local_id=4176f18f88454bc7827b46c9c04112c3 exchange_order_id=13035222179 symbol=BTCUSDT side=BUY type=MARKET qty=0.001 status=FILLED exchange_status=NEW
+2026-04-14 23:18:41 | INFO | trading_bot.api.binance_client | Submitting order: {'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'MARKET', 'quantity': 0.001}
+2026-04-14 23:18:42 | INFO | trading_bot.core.order_manager | Order placed | local_id=23c28b887f014ea6bb7cae503dbc830a exchange_order_id=13035222508 symbol=BTCUSDT side=SELL type=MARKET qty=0.001 status=FILLED exchange_status=NEW
+2026-04-14 23:18:45 | INFO | trading_bot.api.binance_client | Submitting order: {'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'LIMIT', 'quantity': 0.001, 'price': 60000.0, 'timeInForce': 'GTC'}
+2026-04-14 23:18:45 | INFO | trading_bot.core.order_manager | Order placed | local_id=74b7c62c39c5427ea5abee6c3524cfb0 exchange_order_id=13035222665 symbol=BTCUSDT side=BUY type=LIMIT qty=0.001 status=PENDING exchange_status=NEW
+2026-04-14 23:18:49 | INFO | trading_bot.api.binance_client | Submitting order: {'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'LIMIT', 'quantity': 0.001, 'price': 90000.0, 'timeInForce': 'GTC'}
+2026-04-14 23:18:49 | INFO | trading_bot.core.order_manager | Order placed | local_id=567e5e916f134ff4892177b9653f01aa exchange_order_id=13035222817 symbol=BTCUSDT side=SELL type=LIMIT qty=0.001 status=PENDING exchange_status=NEW

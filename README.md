@@ -2,6 +2,10 @@
 
 A production-style Python trading platform for Binance Futures Testnet (USDT-M), designed with clean architecture principles and built for both execution and analytics workflows.
 
+## Live App
+
+Open the deployed Streamlit dashboard here: **https://jaytradingbot.streamlit.app/**
+
 ## Live Deployment
 
 - Streamlit app: https://jaytradingbot.streamlit.app/
