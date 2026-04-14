@@ -185,6 +185,17 @@ def build_equity_curve(trades: pd.DataFrame) -> pd.DataFrame:
 	return pd.DataFrame({"equity": equity, "timestamp": trades.get("timestamp", pd.Series(range(len(trades))))})
 
 
+def prepare_trade_history_for_display(trades: pd.DataFrame) -> pd.DataFrame:
+	if trades.empty or "timestamp" not in trades.columns:
+		return trades
+
+	display_trades = trades.copy()
+	display_trades["_timestamp_sort"] = pd.to_datetime(display_trades["timestamp"], errors="coerce", utc=True)
+	display_trades = display_trades.sort_values(by="_timestamp_sort", ascending=False, na_position="last")
+	display_trades = display_trades.drop(columns=["_timestamp_sort"])
+	return display_trades
+
+
 def current_market_snapshot(client: BinanceClient, symbols: list[str], portfolio: PortfolioTracker) -> pd.DataFrame:
 	rows = []
 	for symbol in symbols:
@@ -278,7 +289,7 @@ def main() -> None:
 		st.subheader("Live Market Monitor")
 		st.dataframe(snapshot, use_container_width=True, hide_index=True)
 		st.subheader("Trade History")
-		st.dataframe(trades.sort_values(by="timestamp", ascending=False) if "timestamp" in trades.columns and not trades.empty else trades, use_container_width=True, hide_index=True)
+		st.dataframe(prepare_trade_history_for_display(trades), use_container_width=True, hide_index=True)
 
 	with main_right:
 		st.subheader("Live PnL")
